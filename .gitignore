@@ -1,0 +1,35 @@
+# Secrets (machine-specific)
+settings.local.json
+
+# Sensitive files
+*.key
+*.pem
+*.p12
+*.jks
+.env
+.env.*
+
+# Claude Code ephemeral
+history.jsonl
+sessions/
+projects/
+cache/
+debug/
+telemetry/
+plans/
+tasks/
+todos/
+transcripts/
+backups/
+paste-cache/
+shell-snapshots/
+file-history/
+statsig/
+stats-cache.json
+session-env/
+ide/
+plugins/
+
+# OS
+.DS_Store
+Thumbs.db
