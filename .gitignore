@@ -15,6 +15,7 @@ sessions/
 projects/
 cache/
 debug/
+!skills/debug/
 telemetry/
 plans/
 tasks/

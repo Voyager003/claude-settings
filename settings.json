@@ -25,11 +25,35 @@
       },
       {
         "matcher": "Edit",
-        "hooks": [{ "type": "command", "command": "python3 ~/.claude/hooks/guardrail.py" }]
+        "hooks": [
+          { "type": "command", "command": "python3 ~/.claude/hooks/guardrail.py" },
+          { "type": "command", "command": "python3 ~/.claude/hooks/pre-write-secret-scan.py" }
+        ]
       },
       {
         "matcher": "Write",
-        "hooks": [{ "type": "command", "command": "python3 ~/.claude/hooks/guardrail.py" }]
+        "hooks": [
+          { "type": "command", "command": "python3 ~/.claude/hooks/guardrail.py" },
+          { "type": "command", "command": "python3 ~/.claude/hooks/pre-write-secret-scan.py" }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [{ "type": "command", "command": "bash ~/.claude/hooks/session-start-context.sh" }]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [{ "type": "command", "command": "python3 ~/.claude/hooks/user-prompt-inject.py" }]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [{ "type": "command", "command": "python3 ~/.claude/hooks/stop-self-check.py" }]
       }
     ]
   }
