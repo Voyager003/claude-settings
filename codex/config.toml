@@ -1,0 +1,47 @@
+# Codex CLI config — security-first defaults, mirrors claude-settings philosophy.
+# Installs to: ~/.codex/config.toml (via install.sh)
+#
+# Secrets (auth.json, OPENAI_API_KEY, etc.) MUST NOT live here. Use the OS
+# keychain or env vars, and keep any machine-specific overrides in a
+# git-ignored ~/.codex/config.local.toml if you need one.
+
+# ─── Top-level keys (must appear before any [section]) ──────
+# Conservative defaults. Override per-project via .codex/config.toml if needed.
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+# Surface less chain-of-thought noise in CI / non-interactive use.
+hide_agent_reasoning = true
+
+# ─── Feature flags ──────────────────────────────────────────
+[features]
+# Required to activate hooks.json (~/.codex/hooks.json + <repo>/.codex/hooks.json).
+# Hooks are experimental in Codex CLI; re-evaluate after upstream stabilizes.
+codex_hooks = true
+
+# ─── Analytics (opt out) ────────────────────────────────────
+[analytics]
+# Turn off anonymous usage/health telemetry to OpenAI. Matches the
+# "security first / no external telemetry" stance of this repo.
+enabled = false
+
+# ─── History persistence ────────────────────────────────────
+[history]
+# Keep local history but cap the file so it cannot grow unbounded.
+# Set persistence = "none" if you want zero local transcripts.
+max_bytes = 104857600  # 100 MiB
+
+# ─── Shell environment policy ───────────────────────────────
+# Subprocesses launched by Codex inherit a minimal env. The default
+# KEY/SECRET/TOKEN filter (ignore_default_excludes = false) is kept.
+[shell_environment_policy]
+ignore_default_excludes = false
+exclude = [
+  "AWS_*",
+  "AZURE_*",
+  "GCP_*",
+  "GOOGLE_*",
+]
+
+# ─── Sandbox (workspace-write) ──────────────────────────────
+[sandbox_workspace_write]
+network_access = false  # opt in explicitly when a task needs egress
