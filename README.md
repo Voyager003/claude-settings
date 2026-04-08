@@ -82,13 +82,24 @@ cd claude-settings
 
 ## Hooks
 
+### Original (in-house)
 | Hook | 이벤트 | 타입 | 기능 |
 |------|--------|------|------|
 | `guardrail.py` | PreToolUse (Bash·Read·Edit·Write) | command | 경로·명령 기반 통합 가드레일 (자기 보호, 직접 편집 필요) |
-| `pre-write-secret-scan.py` | PreToolUse (Write·Edit) | command | Write/Edit **내용**에서 AWS/GitHub/OpenAI/Slack/Private key/JWT 탐지, 발견 시 차단. guardrail과 직교하는 내용 기반 방어층 |
-| `session-start-context.sh` | SessionStart | command | 세션 시작 시 CWD·브랜치·dirty 파일·최근 커밋 3개를 `additionalContext`로 주입 (git repo 아니면 skip) |
-| `user-prompt-inject.py` | UserPromptSubmit | command | 매 프롬프트마다 `[현재 시점] 날짜 \| CWD \| Branch` 주입 — 지식 컷오프로 인한 날짜 오류 방지 |
-| `stop-self-check.py` | Stop | command | 응답 종료 시 `CLAUDE.md`의 FINAL SELF-CHECK 항목을 재주입 (사용자에게는 `suppressOutput: true`로 숨김) |
+| `pre-write-secret-scan.py` | PreToolUse (Write·Edit) | command | Write/Edit **내용**에서 AWS/GitHub/OpenAI/Slack/Private key/JWT 탐지, 발견 시 차단 |
+| `session-start-context.sh` | SessionStart | command | 세션 시작 시 CWD·브랜치·dirty 파일·최근 커밋 3개를 `additionalContext`로 주입 |
+| `user-prompt-inject.py` | UserPromptSubmit | command | 매 프롬프트마다 `[현재 시점] 날짜 \| CWD \| Branch` 주입 |
+| `stop-self-check.py` | Stop | command | 응답 종료 시 `CLAUDE.md`의 FINAL SELF-CHECK 항목을 재주입 (`suppressOutput: true`) |
+
+### ECC origin (affaan-m/everything-claude-code, MIT)
+Node.js 원본을 Python으로 재작성하여 기존 훅 스타일과 일관성 유지.
+
+| Hook | 이벤트 | 기능 |
+|------|--------|------|
+| `pre-bash-block-no-verify.py` | PreToolUse (Bash) | `git --no-verify` / `git push -n` 등 hook bypass 플래그 차단 (exit 2) |
+| `pre-bash-commit-quality.py` | PreToolUse (Bash) | `git commit` 직전 staged 파일에서 console.log·debugger·secret 검사, conventional commit 메시지 검증 |
+| `post-bash-pr-created.py` | PostToolUse (Bash) | `gh pr create` 성공 시 PR URL·리뷰 명령 stderr 출력 |
+| `pre-edit-suggest-compact.py` | PreToolUse (Edit·Write) | Edit/Write 호출 카운터 (세션별), 임계값(`COMPACT_THRESHOLD`, 기본 50)에서 `/compact` 제안 |
 
 각 훅은 `settings.json`의 `hooks` 배열에 독립적으로 등록되어 있으므로 개별 비활성화 가능.
 
@@ -101,12 +112,68 @@ cd claude-settings
 
 ## Skills
 
+### Original (in-house, read-only)
 | 스킬 | 설명 |
 |------|------|
-| `/ask` | 코드 수정 없이 코드베이스 질의응답 (read-only) |
+| `/ask` | 코드 수정 없이 코드베이스 질의응답 |
 | `/plan` | 구조화된 구현 계획 생성 (Goals/Scope/Steps/Verification/Risks) |
-| `/review` | `rules/` 기반 자가 코드 리뷰 (CRITICAL/WARN/INFO 분류 + 컴플라이언스 매트릭스) |
+| `/review` | `rules/` 기반 자가 코드 리뷰 (CRITICAL/WARN/INFO + 컴플라이언스 매트릭스) |
 | `/debug` | Investigation-First 디버깅 워크플로 (Log → Repro → Hypothesis → Evidence → Next) |
+
+### ECC origin (affaan-m/everything-claude-code, MIT)
+| 스킬 | 설명 |
+|------|------|
+| `hexagonal-architecture` | Ports & Adapters 시스템 설계·리팩토링 (TS/Java/Kotlin/Go) |
+| `api-design` | REST·GraphQL API 설계 패턴 (버저닝·에러 처리·페이지네이션) |
+| `deep-research` | firecrawl·exa MCP 기반 다중 소스 리서치 (MCP 서버 설정 필요) |
+| `kotlin-patterns` | Kotlin 2.0+ idiomatic 패턴·null safety·coroutine |
+| `springboot-patterns` | **Spring Boot 4.0+** 아키텍처·REST·JPA·async (Spring Framework 7.x baseline) |
+| `frontend-patterns` | React·Next.js·상태관리·성능 최적화 |
+
+## Agents (Claude Code 전용)
+
+ECC에서 채택한 12개 subagent. `.claude/agents/`에 보관되며 `~/.claude/agents/`로 설치된다.
+
+> **Codex CLI는 미지원**: Codex의 `[agents]` 설정은 role config 성격이며, Claude Code의 frontmatter 기반 subagent 시스템과 호환되지 않는다. Agents는 Claude Code 세션에서만 자동 발동된다.
+
+### Core agents
+| Agent | 역할 |
+|---|---|
+| `planner` | Proactive 구현 계획 (`/plan` skill과 공존; agent는 자동 발동) |
+| `code-reviewer` | 범용 코드 리뷰 (git diff 자동 분석, confidence-based filtering) |
+| `security-reviewer` | 보안 취약점 전문 리뷰 (SQL injection, XSS, secrets, auth bypass) |
+| `refactor-cleaner` | dead code, 중복 제거, knip / depcheck / ts-prune 실행 |
+
+### Support agents
+| Agent | 역할 |
+|---|---|
+| `doc-updater` | README·codemap·문서 업데이트 |
+| `tdd-guide` | Red-Green-Refactor 워크플로 강제 |
+| `database-reviewer` | PostgreSQL·Supabase 쿼리·스키마 리뷰 |
+
+### Language-specific
+| Agent | 역할 |
+|---|---|
+| `typescript-reviewer` | TS strict mode, `any` 회피, 타입 안정성 |
+| `kotlin-reviewer` | Kotlin idiom, null safety, coroutine 패턴 |
+| `java-reviewer` | Java/Spring 레이어링, DI, 트랜잭션 경계 |
+| `java-build-resolver` | Java/Maven/Gradle 빌드 오류 자동 해결 |
+| `kotlin-build-resolver` | Kotlin/Gradle 빌드 오류 자동 해결 |
+
+## ECC 채택 정책
+
+이 레포는 보안·가드레일 중심 철학을 유지하면서 [`affaan-m/everything-claude-code`](https://github.com/affaan-m/everything-claude-code) (MIT) 의 검증된 컴포넌트를 큐레이션 채택한다.
+
+**채택된 항목 (총 22개)**: 4 hooks + 12 agents + 6 skills.
+
+**채택 원칙**:
+- 우리 기존 항목과 **중복되지 않는 것** 우선
+- 각 파일 frontmatter에 `origin: ECC (affaan-m/everything-claude-code, MIT)` 명시
+- ECC의 Node.js 훅은 **Python으로 재작성**하여 우리 훅 스타일과 일관성 유지
+- ECC의 `run-with-flags.js` 프로파일 시스템은 미적용 (오버엔지니어링 회피)
+- Spring Boot 관련은 **4.0+ 기준으로 업데이트**
+
+전체 ECC 크기는 47 agents / 181 skills / 79 commands / 34 hooks이며, 본 레포는 그중 **약 12%** 만 큐레이션 채택했다. 추가가 필요하면 `/tmp/everything-claude-code/`를 직접 참조하거나 후속 작업으로 별도 채택.
 
 ## 차단 명령어 추가
 

@@ -22,6 +22,18 @@
             "command": "python3 ~/.codex/hooks/guardrail.py",
             "timeout": 10,
             "statusMessage": "Checking Bash command"
+          },
+          {
+            "type": "command",
+            "command": "python3 ~/.codex/hooks/pre-bash-block-no-verify.py",
+            "timeout": 5,
+            "statusMessage": "Blocking hook bypass flags"
+          },
+          {
+            "type": "command",
+            "command": "python3 ~/.codex/hooks/pre-bash-commit-quality.py",
+            "timeout": 30,
+            "statusMessage": "Pre-commit quality check"
           }
         ]
       }

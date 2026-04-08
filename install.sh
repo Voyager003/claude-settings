@@ -32,7 +32,14 @@ install_claude() {
     fi
   done
 
-  echo "  → CLAUDE.md, settings.json, rules/, hooks/, commands/, skills/, scheduled-tasks/"
+  # .claude/agents/ — Claude Code subagents (ECC origin). The repo stores
+  # these under .claude/agents/ to match the runtime location.
+  if [ -d "$REPO_DIR/.claude/agents" ]; then
+    mkdir -p "$CLAUDE_DIR/agents"
+    cp -r "$REPO_DIR/.claude/agents/." "$CLAUDE_DIR/agents/"
+  fi
+
+  echo "  → CLAUDE.md, settings.json, rules/, hooks/, commands/, skills/, scheduled-tasks/, agents/"
 }
 
 install_codex() {

@@ -17,7 +17,11 @@
     "PreToolUse": [
       {
         "matcher": "Bash",
-        "hooks": [{ "type": "command", "command": "python3 ~/.claude/hooks/guardrail.py" }]
+        "hooks": [
+          { "type": "command", "command": "python3 ~/.claude/hooks/guardrail.py" },
+          { "type": "command", "command": "python3 ~/.claude/hooks/pre-bash-block-no-verify.py" },
+          { "type": "command", "command": "python3 ~/.claude/hooks/pre-bash-commit-quality.py" }
+        ]
       },
       {
         "matcher": "Read",
@@ -27,15 +31,23 @@
         "matcher": "Edit",
         "hooks": [
           { "type": "command", "command": "python3 ~/.claude/hooks/guardrail.py" },
-          { "type": "command", "command": "python3 ~/.claude/hooks/pre-write-secret-scan.py" }
+          { "type": "command", "command": "python3 ~/.claude/hooks/pre-write-secret-scan.py" },
+          { "type": "command", "command": "python3 ~/.claude/hooks/pre-edit-suggest-compact.py" }
         ]
       },
       {
         "matcher": "Write",
         "hooks": [
           { "type": "command", "command": "python3 ~/.claude/hooks/guardrail.py" },
-          { "type": "command", "command": "python3 ~/.claude/hooks/pre-write-secret-scan.py" }
+          { "type": "command", "command": "python3 ~/.claude/hooks/pre-write-secret-scan.py" },
+          { "type": "command", "command": "python3 ~/.claude/hooks/pre-edit-suggest-compact.py" }
         ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [{ "type": "command", "command": "python3 ~/.claude/hooks/post-bash-pr-created.py" }]
       }
     ],
     "SessionStart": [
