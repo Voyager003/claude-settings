@@ -17,6 +17,9 @@ hide_agent_reasoning = true
 # Required to activate hooks.json (~/.codex/hooks.json + <repo>/.codex/hooks.json).
 # Hooks are experimental in Codex CLI; re-evaluate after upstream stabilizes.
 codex_hooks = true
+# Required to activate skills (~/.codex/skills/ + .agents/skills/).
+# Skills provide reusable playbooks for specific tasks (review, debug, plan, etc.).
+codex_skills = true
 
 # ─── Analytics (opt out) ────────────────────────────────────
 [analytics]

@@ -63,3 +63,6 @@ in sync when the core policy changes. Codex-specific deviations are noted with
   does not exceed `project_doc_max_bytes`.
 - **Telemetry**: `analytics.enabled = false` is configured in `config.toml`.
   Do not re-enable without the user's explicit request.
+- **Skills**: 11 skills installed in `~/.codex/skills/`. Invoked explicitly
+  via `$skill-name` (e.g. `$plan`, `$review`, `$debug`) or automatically
+  matched by prompt content. Use `/skills` to browse installed skills.

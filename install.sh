@@ -69,7 +69,12 @@ install_codex() {
     cp -r "$REPO_DIR/codex/hooks" "$CODEX_DIR/"
   fi
 
-  echo "  → AGENTS.md, config.toml, hooks.json, hooks/"
+  # Skills directory
+  if [ -d "$REPO_DIR/codex/skills" ]; then
+    cp -r "$REPO_DIR/codex/skills" "$CODEX_DIR/"
+  fi
+
+  echo "  → AGENTS.md, config.toml, hooks.json, hooks/, skills/"
 }
 
 case "$TARGET" in
