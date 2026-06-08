@@ -130,6 +130,11 @@ Node.js 원본을 Python으로 재작성하여 기존 훅 스타일과 일관성
 | `springboot-patterns` | **Spring Boot 4.0+** 아키텍처·REST·JPA·async (Spring Framework 7.x baseline) |
 | `frontend-patterns` | React·Next.js·상태관리·성능 최적화 |
 
+### External origin (WH-2099/mermaid-skill, MIT)
+| 스킬 | 설명 |
+|------|------|
+| `mermaid` | Mermaid 다이어그램 생성 (flowchart, sequence, class, ER, Gantt 등) |
+
 ## Agents (Claude Code 전용)
 
 ECC에서 채택한 12개 subagent. `.claude/agents/`에 보관되며 `~/.claude/agents/`로 설치된다.
@@ -208,7 +213,7 @@ OpenAI **Codex CLI** (experimental hooks)에도 동일한 철학을 적용했습
 | `session-start-context.sh` | ✅ | matcher `"startup\|resume"` 사용 |
 | `user-prompt-inject.py` | ✅ | Codex는 plain text stdout도 context로 수용 |
 | `stop-self-check.py` | ⚠️ 부분 | Codex Stop은 `additionalContext` 미지원. `systemMessage`로 대체 → 사용자에게 warning으로 보임 |
-| Skills (`/ask`, `/plan`, `/review`, `/debug`) | ⏳ TODO | Codex Skills 시스템은 별도 스펙. 후속 작업으로 포팅 예정 |
+| Skills (`/ask`, `/plan`, `/review`, `/debug`, `$mermaid`) | ✅ | `codex/skills/`에 포팅. Codex에서는 `$skill-name` 형태로 호출 |
 | `CLAUDE.md` | ✅ `codex/AGENTS.md` | 핵심 정책 이식 + Codex 제약 섹션 추가 |
 
 ### Codex hooks.json 구조
