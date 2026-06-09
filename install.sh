@@ -109,4 +109,4 @@ echo '      }'
 echo ""
 echo "  • Codex CLI: create ~/.codex/config.local.toml for machine-specific overrides."
 echo "    auth.json is managed by 'codex login' / OS keychain — do NOT edit by hand."
-echo "    Hooks are experimental: confirm 'codex_hooks = true' is set in config.toml."
+echo "    Hooks are experimental: confirm 'hooks = true' is set in config.toml."

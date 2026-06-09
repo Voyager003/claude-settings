@@ -70,7 +70,7 @@ cd claude-settings
 ├── scheduled-tasks/           # Claude Code 예약 작업
 ├── codex/                     # Codex CLI (experimental hooks)
 │   ├── AGENTS.md              # Codex entry router (CLAUDE.md 포팅)
-│   ├── config.toml            # Codex 설정 (codex_hooks=true, 보안 기본값)
+│   ├── config.toml            # Codex 설정 (hooks=true, 보안 기본값)
 │   ├── hooks.json             # Codex 훅 등록
 │   └── hooks/
 │       ├── guardrail.py              # Bash-only 가드레일 (Codex 제약)
@@ -227,7 +227,7 @@ OpenAI **Codex CLI** (experimental hooks)에도 동일한 철학을 적용했습
 | `UserPromptSubmit` | (all) | `user-prompt-inject.py` | 날짜·CWD·branch 주입 |
 | `Stop` | (all) | `stop-self-check.py` | FINAL SELF-CHECK 리마인더 (systemMessage) |
 
-`config.toml`에서 `[features] codex_hooks = true`가 설정되어 있어야 활성화됩니다.
+`config.toml`에서 `[features] hooks = true`가 설정되어 있어야 활성화됩니다.
 
 ### Codex-specific 주의사항
 
@@ -243,7 +243,7 @@ OpenAI **Codex CLI** (experimental hooks)에도 동일한 철학을 적용했습
 ```bash
 ./install.sh codex
 codex --version                     # Codex CLI 설치 확인
-cat ~/.codex/config.toml             # codex_hooks=true 확인
+cat ~/.codex/config.toml             # hooks=true 확인
 cat ~/.codex/hooks.json              # 4개 이벤트 등록 확인
 ls -la ~/.codex/hooks/               # 4개 훅 파일 + 실행 권한 확인
 ```
